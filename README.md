@@ -29,7 +29,6 @@ npm install socket-io.sessions
   }));
 
   sio.sockets.on("connection", function(socket){
-    console.log("user connected: ", socket.handshake.user.name);
     
     socket.handshake.getSession(function (err, session) {
       socket.emit('aaa!', session.someSessionProperty);
