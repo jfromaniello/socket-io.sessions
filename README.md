@@ -1,5 +1,6 @@
 Access [Express](http://expressjs.com/) session from [socket.io](http://socket.io).
 
+[![Build Status](https://travis-ci.org/jfromaniello/socket-io.sessions.png)](https://travis-ci.org/jfromaniello/socket-io.sessions)
 
 ## Installation
 
