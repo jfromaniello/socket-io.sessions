@@ -1,15 +1,13 @@
-Access [Passport.js](http://passportjs.org) user information from [socket.io](http://socket.io) connection.
+Access [Express](http://expressjs.com/) session from [socket.io](http://socket.io).
 
 
-Installation
-============
+## Installation
 
 ```
-npm install passport.socketio
+npm install socket-io.sessions
 ```
 
-Usage 
-=====
+## Usage 
 
 
 ```javascript
@@ -17,51 +15,62 @@ Usage
   //configure passport and express
 
   var socketIo = require("socket.io"),
-    passportSocketIo = require("passport.socketio");
+    socketIoSessions = require("socket-io.sessions");
 
   var sio = socketIo.listen(webServer);
 
 
-  //except for the optional fail and success the parameter object has the 
   //same attribute than the session middleware http://www.senchalabs.org/connect/middleware-session.html
 
-  sio.set("authorization", passportSocketIo.authorize({
+  sio.set("authorization", socketIoSessions({
     key:    'express.sid',       //the cookie where express (or connect) stores its session id.
     secret: 'my session secret', //the session secret to parse the cookie
-    store:   mySessionStore,     //the session store that express uses
-    fail: function(data, accept) {     // *optional* callbacks on success or fail
-      accept(null, false);             // second param takes boolean on whether or not to allow handshake
-    },
-    success: function(data, accept) {
-      accept(null, true);
-    }
+    store:   mySessionStore      //the session store that express uses
   }));
 
   sio.sockets.on("connection", function(socket){
     console.log("user connected: ", socket.handshake.user.name);
     
-    //filter sockets by user...
-    var userGender = socket.handshake.user.gender, 
-        opposite = userGender === "male" ? "female" : "male";
-
-    passportSocketIo.filterSocketsByUser(sio, function (user) {
-      return user.gender === opposite;
-    }).forEach(function(s){
-      s.send("a " + userGender + " has arrived!");
+    socket.handshake.getSession(function (err, session) {
+      socket.emit('aaa!', session.someSessionProperty);
     });
 
   });
 
 ```
 
-Develop
-=======
+### Change the session
+
+~~~javascript
+
+socket.handshake.getSession(function (err, session) {
+  session.something = 123;
+  socket.handshake.saveSession(session, function (err) {
+    //whatever
+  });
+});
+
+~~~
+
+
+### Use with [passport-socket.io](https://github.com/jfromaniello/passport.socketio)
+
+~~~javascript
+  var sessionOptions = {
+    key:    'express.sid',      
+    secret: 'my session secret',
+    store:   mySessionStore     
+  };
+  //chain the two this way:
+  sio.set("authorization", socketIoSessions(sessionOptions, passportSocketIo.authorize(sessionOptions)));
+~~~
+
+## Develop
 
   npm install
   npm test
 
 
-License
-========
+## License
 
 MIT - José F. Romaniello 2012.
