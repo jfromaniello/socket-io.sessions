@@ -1,6 +1,6 @@
 {
   "name": "socket-io.sessions",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "access express.js session from socket.io",
   "main": "lib/index.js",
   "keywords": [
